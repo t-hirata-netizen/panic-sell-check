@@ -1,0 +1,681 @@
+<title>投資冷静度診断</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --ink:#16213A;
+    --paper:#EDF0ED;
+    --surface:#FFFFFF;
+    --surface-2:#E2E6E0;
+    --line:rgba(22,33,58,0.14);
+    --muted:#5B6470;
+    --calm:#2E7D5B;
+    --calm-bg:rgba(46,125,91,0.10);
+    --mid:#B9791F;
+    --mid-bg:rgba(185,121,31,0.12);
+    --alert:#C84A30;
+    --alert-bg:rgba(200,74,48,0.10);
+    --focus:#2A3D66;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#EAEDEA;
+      --paper:#10141C;
+      --surface:#1A202C;
+      --surface-2:#242B38;
+      --line:rgba(234,237,234,0.14);
+      --muted:#9AA3B2;
+      --calm:#57C295;
+      --calm-bg:rgba(87,194,149,0.12);
+      --mid:#E3AE55;
+      --mid-bg:rgba(227,174,85,0.13);
+      --alert:#FF7A5C;
+      --alert-bg:rgba(255,122,92,0.13);
+      --focus:#9DB2E0;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#EAEDEA;
+    --paper:#10141C;
+    --surface:#1A202C;
+    --surface-2:#242B38;
+    --line:rgba(234,237,234,0.14);
+    --muted:#9AA3B2;
+    --calm:#57C295;
+    --calm-bg:rgba(87,194,149,0.12);
+    --mid:#E3AE55;
+    --mid-bg:rgba(227,174,85,0.13);
+    --alert:#FF7A5C;
+    --alert-bg:rgba(255,122,92,0.13);
+    --focus:#9DB2E0;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Zen Kaku Gothic New",-apple-system,"Hiragino Sans",sans-serif;
+    padding-inline:20px;
+    padding-block:36px;
+    line-height:1.7;
+  }
+  h1,h2,h3{
+    font-family:"Shippori Mincho",serif;
+    text-wrap:balance;
+    margin:0;
+  }
+  .wrap{max-width:600px;margin-inline:auto;}
+  [hidden]{display:none!important;}
+
+  /* ---- Start screen ---- */
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.14em;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .hero-title{
+    font-size:clamp(28px,7vw,38px);
+    font-weight:800;
+    line-height:1.4;
+  }
+  .hero-lede{
+    margin-top:16px;
+    color:var(--muted);
+    font-size:15px;
+    max-width:52ch;
+  }
+  .motif{
+    width:100%;
+    height:auto;
+    margin-block:28px;
+  }
+  .stat-row{
+    display:flex;
+    gap:10px;
+    margin-block:24px;
+    flex-wrap:wrap;
+  }
+  .stat-pill{
+    flex:1;
+    min-width:140px;
+    background:var(--surface);
+    border:1px solid var(--line);
+    padding:14px 16px;
+    border-radius:4px;
+  }
+  .stat-pill .num{
+    font-family:"Shippori Mincho",serif;
+    font-size:22px;
+    font-variant-numeric:tabular-nums;
+    display:block;
+  }
+  .stat-pill .lbl{
+    font-size:11.5px;
+    color:var(--muted);
+    letter-spacing:.02em;
+  }
+  .btn{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    font-weight:700;
+    font-size:15px;
+    padding:15px 26px;
+    border-radius:10px;
+    background:var(--ink);
+    color:var(--paper);
+    letter-spacing:.02em;
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .btn:hover{opacity:.88;}
+  .btn:active{transform:scale(.98);}
+  .btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px;}
+  .btn-block{width:100%;text-align:center;}
+  .disclaimer{
+    margin-top:22px;
+    font-size:11.5px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+
+  /* ---- Quiz screen ---- */
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:26px;
+  }
+  .progress-track{
+    flex:1;
+    height:4px;
+    background:var(--surface-2);
+    border-radius:2px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--ink);
+    border-radius:2px;
+    transition:width .3s ease;
+  }
+  .progress-num{
+    font-size:12px;
+    color:var(--muted);
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .dim-tag{
+    display:inline-block;
+    font-size:11px;
+    letter-spacing:.08em;
+    color:var(--muted);
+    border:1px solid var(--line);
+    padding:3px 9px;
+    border-radius:100px;
+    margin-bottom:14px;
+  }
+  .q-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:26px 22px;
+  }
+  .q-text{
+    font-family:"Shippori Mincho",serif;
+    font-size:19px;
+    font-weight:600;
+    line-height:1.65;
+    margin-bottom:22px;
+  }
+  .opt-list{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .opt{
+    text-align:left;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:13px 16px;
+    font-size:14.5px;
+    color:var(--ink);
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover{border-color:var(--ink);}
+  .opt:focus-visible{outline:2px solid var(--focus);outline-offset:1px;}
+  .opt.selected{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+  .back-row{
+    margin-top:18px;
+    min-height:36px;
+  }
+  .back-btn{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:13px;
+    cursor:pointer;
+    padding:6px 2px;
+    font-family:"Zen Kaku Gothic New",sans-serif;
+  }
+  .back-btn:hover{color:var(--ink);}
+
+  /* ---- Result screen ---- */
+  .risk-banner{
+    border-radius:6px;
+    padding:22px 22px;
+    border:1px solid var(--line);
+    margin-bottom:26px;
+  }
+  .risk-banner.calm{background:var(--calm-bg);border-color:var(--calm);}
+  .risk-banner.mid{background:var(--mid-bg);border-color:var(--mid);}
+  .risk-banner.alert{background:var(--alert-bg);border-color:var(--alert);}
+  .risk-kicker{
+    font-size:12px;
+    letter-spacing:.1em;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .risk-title{
+    font-size:26px;
+    font-weight:800;
+  }
+  .risk-title.calm{color:var(--calm);}
+  .risk-title.mid{color:var(--mid);}
+  .risk-title.alert{color:var(--alert);}
+  .risk-desc{
+    margin-top:10px;
+    font-size:14px;
+    color:var(--ink);
+  }
+  .section-title{
+    font-family:"Shippori Mincho",serif;
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:14px;
+    margin-top:34px;
+  }
+  .radar-wrap{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:16px 8px 10px;
+  }
+  .radar-wrap svg text{
+    font-family:"Zen Kaku Gothic New",sans-serif;
+    fill:var(--muted);
+  }
+  .bars{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .bar-row .bar-head{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    margin-bottom:6px;
+  }
+  .bar-row .bar-head .v{
+    font-variant-numeric:tabular-nums;
+    color:var(--muted);
+  }
+  .bar-track{
+    height:8px;
+    background:var(--surface-2);
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:4px;
+    background:var(--ink);
+  }
+  .advice-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:3px solid var(--ink);
+    border-radius:2px 6px 6px 2px;
+    padding:16px 18px;
+    margin-bottom:12px;
+  }
+  .advice-card h4{
+    font-size:14.5px;
+    font-weight:700;
+    margin-bottom:6px;
+    font-family:"Zen Kaku Gothic New",sans-serif;
+  }
+  .advice-card p{
+    font-size:13.5px;
+    color:var(--muted);
+    margin:0;
+  }
+  .retake-row{
+    margin-top:32px;
+    display:flex;
+    justify-content:center;
+  }
+  footer.disclaimer{
+    margin-top:30px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+  }
+</style>
+
+<div class="wrap">
+
+  <!-- START -->
+  <section id="view-start">
+    <p class="eyebrow">行動ファイナンス理論に基づく自己診断</p>
+    <h1 class="hero-title">その一手は、<br>計画？　それとも恐怖？</h1>
+    <p class="hero-lede">相場が急落したとき、人はいつもの自分ではいられなくなる。金融知識・長期視点・衝動性・自信過剰の4つの観点から、あなたが「パニック売り」に陥りやすいタイプかどうかを14問でチェックします。</p>
+
+    <svg class="motif" viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="急落からの回復を示す折れ線グラフ">
+      <line x1="0" y1="130" x2="560" y2="130" stroke="var(--line)" stroke-width="1"/>
+      <path d="M0,70 L90,58 L160,66 L210,40 L250,120 L300,142 L350,100 L420,55 L490,44 L560,30"
+            fill="none" stroke="var(--muted)" stroke-width="2" opacity="0.55"/>
+      <path d="M210,40 L250,120 L300,142" fill="none" stroke="var(--alert)" stroke-width="3" stroke-linecap="round"/>
+      <path d="M300,142 L350,100 L420,55" fill="none" stroke="var(--calm)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="300" cy="142" r="5" fill="var(--alert)"/>
+      <text x="300" y="158" text-anchor="middle" font-size="11" fill="var(--alert)">パニック売り</text>
+      <text x="440" y="40" text-anchor="middle" font-size="11" fill="var(--calm)">冷静な保有</text>
+    </svg>
+
+    <div class="stat-row">
+      <div class="stat-pill"><span class="num">14</span><span class="lbl">設問数</span></div>
+      <div class="stat-pill"><span class="num">約3分</span><span class="lbl">所要時間</span></div>
+      <div class="stat-pill"><span class="num">5軸</span><span class="lbl">診断レーダー</span></div>
+    </div>
+
+    <button class="btn btn-block" id="start-btn">診断をはじめる</button>
+    <p class="disclaimer">本診断は学術研究（行動ファイナンス）の考え方を参考にした自己理解ツールであり、特定の金融商品の売買や投資を勧誘するものではありません。診断結果は目安としてご活用ください。</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="view-quiz" hidden>
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-num" id="progress-num">1 / 14</div>
+    </div>
+    <span class="dim-tag" id="dim-tag">金融知識</span>
+    <div class="q-card">
+      <p class="q-text" id="q-text"></p>
+      <div class="opt-list" id="opt-list"></div>
+    </div>
+    <div class="back-row">
+      <button class="back-btn" id="back-btn" hidden>← 前の質問に戻る</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="view-result" hidden>
+    <div class="risk-banner" id="risk-banner">
+      <p class="risk-kicker">診断結果</p>
+      <p class="risk-title" id="risk-title"></p>
+      <p class="risk-desc" id="risk-desc"></p>
+    </div>
+
+    <h3 class="section-title">パニック耐性レーダー</h3>
+    <div class="radar-wrap" id="radar-wrap"></div>
+
+    <h3 class="section-title">項目別スコア</h3>
+    <div class="bars" id="bars"></div>
+
+    <h3 class="section-title">今日からできること</h3>
+    <div id="advice-list"></div>
+
+    <div class="retake-row">
+      <button class="btn" id="retake-btn">もう一度診断する</button>
+    </div>
+
+    <footer class="disclaimer">
+      本診断は楽天証券・広島大学の共同研究（行動ファイナンス研究レポート）で示された「金融知識・金融態度・金融行動・衝動性・自信過剰バイアス」という考え方を参考に設計したオリジナルの自己診断コンテンツです。学術的な妥当性を保証するものではなく、投資助言や特定商品の推奨を目的としたものではありません。最終的な投資判断はご自身の責任で行ってください。
+    </footer>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var LIKERT_LABELS = ["全く当てはまらない","あまり当てはまらない","どちらとも言えない","やや当てはまる","非常によく当てはまる"];
+  var SELF_LABELS   = ["かなり低い","やや低い","平均的","やや高い","かなり高い"];
+
+  var QUESTIONS = [
+    {id:'k1', dim:'knowledge', dimLabel:'金融知識', type:'choice',
+     q:'年利6%で複利運用した場合、資産がおよそ2倍になるまでの期間に最も近いのはどれ？',
+     options:[{t:'6年'},{t:'12年',correct:true},{t:'18年'},{t:'24年'}]},
+    {id:'k2', dim:'knowledge', dimLabel:'金融知識', type:'choice',
+     q:'値動きの異なる業種の銘柄に分けて投資するのと、1つの業種に集中して投資するのとでは、一般的にどちらがリスクを抑えやすい？',
+     options:[{t:'1つの業種に集中する'},{t:'複数の業種に分ける',correct:true},{t:'どちらも変わらない'},{t:'わからない'}]},
+    {id:'k3', dim:'knowledge', dimLabel:'金融知識', type:'choice',
+     q:'物価が年2%で上がり続ける一方、預金金利が0.1%のとき、現金のまま置いておいた資産の実質的な価値はどうなる？',
+     options:[{t:'実質的に増える'},{t:'ほぼ変わらない'},{t:'実質的に目減りする',correct:true},{t:'わからない'}]},
+    {id:'c1', dim:'confidence', dimLabel:'自己評価', type:'scale5', labels:SELF_LABELS,
+     q:'投資や資産形成についての自分の知識レベルは、同世代の平均と比べてどのくらいだと思いますか？'},
+    {id:'a1', dim:'attitude', dimLabel:'金融態度（長期視点）', type:'likert', labels:LIKERT_LABELS,
+     q:'投資は10年、20年といった長い時間軸で考えるようにしている。'},
+    {id:'a2', dim:'attitude', dimLabel:'金融態度（長期視点）', type:'likert', labels:LIKERT_LABELS,
+     q:'日々の値動きよりも、将来のライフプランを優先して投資判断をしている。'},
+    {id:'a3', dim:'attitude', dimLabel:'金融態度（長期視点）', type:'likert', labels:LIKERT_LABELS,
+     q:'一時的に含み損が出ても、当初決めた計画通りに投資を続けられる自信がある。'},
+    {id:'b1', dim:'behavior', dimLabel:'金融行動', type:'likert', labels:LIKERT_LABELS,
+     q:'投資の判断をする前に、複数の情報源を確認するようにしている。'},
+    {id:'b2', dim:'behavior', dimLabel:'金融行動', type:'likert', labels:LIKERT_LABELS,
+     q:'家計や資産の状況を、少なくとも月に一度は記録・確認している。'},
+    {id:'b3', dim:'behavior', dimLabel:'金融行動', type:'likert', labels:LIKERT_LABELS,
+     q:'投資を始める前に、自分がどのくらいの損失まで耐えられるかを考えている。'},
+    {id:'i1', dim:'impulsivity', dimLabel:'衝動性', type:'likert', labels:LIKERT_LABELS,
+     q:'値動きが気になって、一日に何度も株価をチェックしてしまう。'},
+    {id:'i2', dim:'impulsivity', dimLabel:'衝動性', type:'likert', labels:LIKERT_LABELS,
+     q:'欲しいものがあると、後先をあまり考えずに買ってしまうことがある。'},
+    {id:'i3', dim:'impulsivity', dimLabel:'衝動性', type:'likert', labels:LIKERT_LABELS,
+     q:'遠い将来の計画はしっかり立てられるのに、目の前の誘惑には弱いと感じる。'},
+    {id:'i4', dim:'impulsivity', dimLabel:'衝動性', type:'likert', labels:LIKERT_LABELS,
+     q:'株価が急落すると、いてもたってもいられず、つい売ってしまいそうになる。'}
+  ];
+
+  var state = { index:0, answers:{} };
+
+  var viewStart = document.getElementById('view-start');
+  var viewQuiz = document.getElementById('view-quiz');
+  var viewResult = document.getElementById('view-result');
+
+  document.getElementById('start-btn').addEventListener('click', function(){
+    state.index = 0;
+    state.answers = {};
+    viewStart.hidden = true;
+    viewResult.hidden = true;
+    viewQuiz.hidden = false;
+    renderQuestion();
+  });
+
+  document.getElementById('retake-btn').addEventListener('click', function(){
+    state.index = 0;
+    state.answers = {};
+    viewResult.hidden = true;
+    viewStart.hidden = false;
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  document.getElementById('back-btn').addEventListener('click', function(){
+    if(state.index > 0){
+      state.index -= 1;
+      renderQuestion();
+    }
+  });
+
+  function renderQuestion(){
+    var q = QUESTIONS[state.index];
+    document.getElementById('progress-num').textContent = (state.index+1) + ' / ' + QUESTIONS.length;
+    document.getElementById('progress-fill').style.width = ((state.index) / QUESTIONS.length * 100) + '%';
+    document.getElementById('dim-tag').textContent = q.dimLabel;
+    document.getElementById('q-text').textContent = q.q;
+    document.getElementById('back-btn').hidden = state.index === 0;
+
+    var list = document.getElementById('opt-list');
+    list.innerHTML = '';
+
+    var opts, getLabel, onPick;
+    if(q.type === 'choice'){
+      opts = q.options;
+      getLabel = function(o){ return o.t; };
+      onPick = function(o){ return { correct: !!o.correct }; };
+    } else {
+      opts = q.labels.map(function(l, i){ return { t:l, value:i+1 }; });
+      getLabel = function(o){ return o.t; };
+      onPick = function(o){ return { value:o.value }; };
+    }
+
+    opts.forEach(function(o){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'opt';
+      btn.textContent = getLabel(o);
+      var prev = state.answers[q.id];
+      if(prev && ((q.type==='choice' && prev.correct === !!o.correct && getLabel(o) === prev._label) || (q.type!=='choice' && prev.value === o.value))){
+        btn.classList.add('selected');
+      }
+      btn.addEventListener('click', function(){
+        var result = onPick(o);
+        result._label = getLabel(o);
+        state.answers[q.id] = result;
+        Array.prototype.forEach.call(list.children, function(c){ c.classList.remove('selected'); });
+        btn.classList.add('selected');
+        setTimeout(function(){
+          if(state.index < QUESTIONS.length - 1){
+            state.index += 1;
+            renderQuestion();
+          } else {
+            document.getElementById('progress-fill').style.width = '100%';
+            showResult();
+          }
+        }, 220);
+      });
+      list.appendChild(btn);
+    });
+  }
+
+  function clamp(n, lo, hi){ return Math.max(lo, Math.min(hi, n)); }
+
+  function computeScores(){
+    var correct = 0;
+    ['k1','k2','k3'].forEach(function(id){ if(state.answers[id] && state.answers[id].correct) correct++; });
+    var knowledge = correct / 3 * 100;
+
+    var confVal = state.answers['c1'] ? state.answers['c1'].value : 3;
+    var confidence = (confVal - 1) / 4 * 100;
+
+    function avg(ids){
+      var sum = 0, n = 0;
+      ids.forEach(function(id){ if(state.answers[id]){ sum += state.answers[id].value; n++; } });
+      return n ? (sum/n) : 3;
+    }
+    var attitude = (avg(['a1','a2','a3']) - 1) / 4 * 100;
+    var behavior = (avg(['b1','b2','b3']) - 1) / 4 * 100;
+    var impulsivity = (avg(['i1','i2','i3','i4']) - 1) / 4 * 100;
+
+    var overconfidenceGap = clamp(confidence - knowledge, 0, 100);
+
+    var risk = (100-knowledge)*0.2 + (100-attitude)*0.2 + (100-behavior)*0.2 + impulsivity*0.2 + overconfidenceGap*0.2;
+
+    return {
+      knowledge: knowledge, attitude: attitude, behavior: behavior,
+      impulsivity: impulsivity, overconfidenceGap: overconfidenceGap, risk: risk
+    };
+  }
+
+  function polar(cx, cy, r, deg){
+    var rad = (deg - 90) * Math.PI / 180;
+    return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+  }
+
+  function buildRadar(axes){
+    var cx = 150, cy = 150, R = 108;
+    var n = axes.length;
+    var svgParts = [];
+    svgParts.push('<svg viewBox="0 0 300 320" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">');
+
+    [0.25,0.5,0.75,1].forEach(function(frac){
+      var pts = [];
+      for(var i=0;i<n;i++){
+        var p = polar(cx, cy, R*frac, i*360/n);
+        pts.push(p.x.toFixed(1)+','+p.y.toFixed(1));
+      }
+      svgParts.push('<polygon points="'+pts.join(' ')+'" fill="none" stroke="var(--line)" stroke-width="1"/>');
+    });
+
+    for(var i=0;i<n;i++){
+      var edge = polar(cx, cy, R, i*360/n);
+      svgParts.push('<line x1="'+cx+'" y1="'+cy+'" x2="'+edge.x.toFixed(1)+'" y2="'+edge.y.toFixed(1)+'" stroke="var(--line)" stroke-width="1"/>');
+    }
+
+    var dataPts = [];
+    for(var i=0;i<n;i++){
+      var v = clamp(axes[i].value,0,100)/100;
+      var p = polar(cx, cy, R*v, i*360/n);
+      dataPts.push(p.x.toFixed(1)+','+p.y.toFixed(1));
+    }
+    svgParts.push('<polygon points="'+dataPts.join(' ')+'" fill="var(--calm)" fill-opacity="0.22" stroke="var(--calm)" stroke-width="2.5"/>');
+    for(var i=0;i<n;i++){
+      var v = clamp(axes[i].value,0,100)/100;
+      var p = polar(cx, cy, R*v, i*360/n);
+      svgParts.push('<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="3.5" fill="var(--calm)"/>');
+    }
+
+    for(var i=0;i<n;i++){
+      var lp = polar(cx, cy, R+32, i*360/n);
+      var anchor = 'middle';
+      if(lp.x < cx-8) anchor='end';
+      else if(lp.x > cx+8) anchor='start';
+      svgParts.push('<text x="'+lp.x.toFixed(1)+'" y="'+lp.y.toFixed(1)+'" text-anchor="'+anchor+'" font-size="12">'+axes[i].label+'</text>');
+    }
+
+    svgParts.push('</svg>');
+    return svgParts.join('');
+  }
+
+  function showResult(){
+    viewQuiz.hidden = true;
+    viewResult.hidden = false;
+    window.scrollTo({top:0, behavior:'smooth'});
+
+    var s = computeScores();
+
+    var tier, tierClass, tierDesc;
+    if(s.risk < 34){
+      tier = '低リスクタイプ'; tierClass='calm';
+      tierDesc = '知識・視点・行動のバランスが取れており、急落局面でも計画に沿って判断できる傾向があります。今の習慣を維持しましょう。';
+    } else if(s.risk < 67){
+      tier = '中リスクタイプ'; tierClass='mid';
+      tierDesc = '状況によっては感情に判断が左右されやすい面があります。下の項目別スコアで、特にスコアが低い部分から手を打つのがおすすめです。';
+    } else {
+      tier = '高リスクタイプ'; tierClass='alert';
+      tierDesc = '急落局面で衝動的に売却してしまいやすい傾向が強く出ています。売買のルールを事前に決めておくなど、仕組みで感情をカバーすることが重要です。';
+    }
+
+    var banner = document.getElementById('risk-banner');
+    banner.className = 'risk-banner ' + tierClass;
+    var titleEl = document.getElementById('risk-title');
+    titleEl.textContent = tier;
+    titleEl.className = 'risk-title ' + tierClass;
+    document.getElementById('risk-desc').textContent = tierDesc;
+
+    var axes = [
+      { label:'金融知識', value: s.knowledge },
+      { label:'長期視点', value: s.attitude },
+      { label:'合理的行動', value: s.behavior },
+      { label:'衝動コントロール', value: 100 - s.impulsivity },
+      { label:'自己客観性', value: 100 - s.overconfidenceGap }
+    ];
+    document.getElementById('radar-wrap').innerHTML = buildRadar(axes);
+
+    var barsEl = document.getElementById('bars');
+    barsEl.innerHTML = '';
+    axes.forEach(function(ax){
+      var row = document.createElement('div');
+      row.className = 'bar-row';
+      row.innerHTML =
+        '<div class="bar-head"><span>'+ax.label+'</span><span class="v">'+Math.round(ax.value)+' / 100</span></div>'+
+        '<div class="bar-track"><div class="bar-fill" style="width:'+clamp(ax.value,0,100)+'%"></div></div>';
+      barsEl.appendChild(row);
+    });
+
+    var advice = [];
+    if(s.knowledge < 50) advice.push({sev:100-s.knowledge, h:'金融知識を底上げする', p:'複利・分散・インフレなど、投資の基礎知識を少しずつでも学ぶことで、急落時に「今、何が起きているか」を冷静に把握しやすくなります。'});
+    if(s.attitude < 50) advice.push({sev:100-s.attitude, h:'長期の物差しを持つ', p:'投資の目的・期間・目標金額を先に紙やメモに書き出しておくと、目先の値動きに判断を委ねにくくなります。'});
+    if(s.behavior < 50) advice.push({sev:100-s.behavior, h:'判断を仕組み化する', p:'月に一度の家計・資産チェックや、購入前の情報収集をルーティン化すると、感情ではなく手順で判断できるようになります。'});
+    if(s.impulsivity > 50) advice.push({sev:s.impulsivity, h:'衝動的な反応にブレーキをかける', p:'株価アプリの通知を減らす、売る前に24時間置くなど、「間」を作るルールを一つ決めておきましょう。'});
+    if(s.overconfidenceGap > 20) advice.push({sev:s.overconfidenceGap, h:'自己評価を一度疑ってみる', p:'自分の知識に自信がある人ほど、急落時に「自分の判断は正しい」と思い込みやすい傾向があります。複数の情報源で確認する習慣が有効です。'});
+
+    advice.sort(function(a,b){ return b.sev - a.sev; });
+
+    var adviceEl = document.getElementById('advice-list');
+    adviceEl.innerHTML = '';
+    if(advice.length === 0){
+      var card = document.createElement('div');
+      card.className = 'advice-card';
+      card.innerHTML = '<h4>今のバランスを維持する</h4><p>特筆すべき弱点は見当たりません。定期的な資産チェックと、事前に決めたルールを守る習慣をこのまま続けましょう。</p>';
+      adviceEl.appendChild(card);
+    } else {
+      advice.slice(0,3).forEach(function(a){
+        var card = document.createElement('div');
+        card.className = 'advice-card';
+        card.innerHTML = '<h4>'+a.h+'</h4><p>'+a.p+'</p>';
+        adviceEl.appendChild(card);
+      });
+    }
+  }
+})();
+</script>
